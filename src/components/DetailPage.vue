@@ -4,11 +4,10 @@
 
 <script>
 export default {
-    name: 'DetailPage'
+  name: 'DetailPage'
 }
 </script>
 
 <style scoped>
 
 </style>
-

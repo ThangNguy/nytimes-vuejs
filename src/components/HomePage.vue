@@ -10,17 +10,14 @@
     <nav class="mb-3">
       <ul class="nav justify-content-center">
         <li class="nav-item">
-          <a class="nav-link active" href="#">Active</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Link</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Link</a>
-        </li>
-        <li class="nav-item">
           <form class="form-inline">
-            <input class="form-control" type="search" v-model="search" placeholder="Search" aria-label="Search">
+            <input
+              class="form-control"
+              type="search"
+              v-model="search"
+              placeholder="Search"
+              aria-label="Search"
+            >
           </form>
         </li>
       </ul>
@@ -44,64 +41,71 @@
         </div>
       </div>
     </div>
+    <div class="overflow-auto">
+      <div>
+        <b-pagination size="md" :total-rows="100" v-model="currentPage" @change="loadData()" :per-page="10"/>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import _ from "lodash";
-import moment from "moment";
+import _ from 'lodash'
+import moment from 'moment'
 
 export default {
-  name: "HomePage",
-  data() {
+  name: 'HomePage',
+  data () {
     return {
-      search: ""
+      search: '',
+      currentPage: 1
     }
-
   },
   computed: {
-    times() {
-      return this.$store.state.times;
-      console.log(this.$store.state.times);
+    times () {
+      return this.$store.state.times
     },
-    searchTitle() {
-      return this.times.filter((time) => {
+    searchTitle () {
+      return this.times.filter(time => {
         return _.lowerCase(time.headline.main).match(_.lowerCase(this.search))
       })
     }
   },
   methods: {
-    truncate(str) {
+    truncate (str) {
       return _.truncate(str, {
         length: 100,
-        separator: " "
-      });
+        separator: ' '
+      })
     },
-    trunTitle(str) {
+    trunTitle (str) {
       return _.truncate(str, {
         length: 30,
-        separator: " "
-      });
+        separator: ' '
+      })
     },
-    formatPubdate(date) {
-      return moment(date).format("MMMM, D");
+    formatPubdate (date) {
+      return moment(date).format('MMMM, D')
+    },
+    loadData () {
+      this.$store.dispatch('getNYTimes', this.currentPage - 1)
     }
   },
   filters: {
-    newsImage(time) {
-      let baseURL = "https://static01.nyt.com/";
+    newsImage (time) {
+      let baseURL = 'https://static01.nyt.com/'
       let url =
-        "images/2018/11/04/travel/04Hours-Singapore5/merlin_143821452_ed4b5ea3-b52c-496a-9a16-3c225ef111c0-articleLarge.jpg";
+        'images/2018/11/04/travel/04Hours-Singapore5/merlin_143821452_ed4b5ea3-b52c-496a-9a16-3c225ef111c0-articleLarge.jpg'
       if (time !== undefined && time.multimedia[0] !== undefined) {
-        url = time.multimedia[0].url;
+        url = time.multimedia[0].url
       }
-      return baseURL + url;
+      return baseURL + url
     }
   },
-  created() {
-    this.$store.dispatch("getNYTimes");
+  created () {
+    this.$store.dispatch('getNYTimes', this.currentPage - 1)
   }
-};
+}
 </script>
 
 <style scoped lang="scss">
@@ -120,6 +124,3 @@ export default {
   margin-bottom: 40px;
 }
 </style>
-">
-</style>
-
