@@ -7,8 +7,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    times: null,
-    pagination: 0
+    times: null
   },
   mutations: {
     setNYTimes

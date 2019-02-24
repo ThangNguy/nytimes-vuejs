@@ -29,7 +29,7 @@
         :key="index"
       >
         <h3 class="mb-0">
-          <a class="text-dark" href="#">{{ trunTitle(time.headline.main) }}</a>
+          <a class="text-dark" :href="time.web_url">{{ trunTitle(time.headline.main) }}</a>
         </h3>
         <div class="mb-1 text-muted">{{ formatPubdate(time.pub_date) }}</div>
         <div class="snippet">
@@ -43,8 +43,11 @@
     </div>
     <div class="overflow-auto">
       <div>
-        <b-pagination size="md" :total-rows="100" v-model="currentPage" @change="loadData()" :per-page="10"/>
+        <b-pagination size="md" :total-rows="100" v-model="currentPage" @change="loadDataSet()" :per-page="10"/>
       </div>
+    </div>
+    <div class="loading-overlay" v-show="dataLoading">
+      <b-spinner style="width: 3rem; height: 3rem;" label="Large Spinner" />
     </div>
   </div>
 </template>
@@ -52,13 +55,15 @@
 <script>
 import _ from 'lodash'
 import moment from 'moment'
+import { setTimeout } from 'timers'
 
 export default {
   name: 'HomePage',
   data () {
     return {
       search: '',
-      currentPage: 1
+      currentPage: 1,
+      dataLoading: false
     }
   },
   computed: {
@@ -88,7 +93,19 @@ export default {
       return moment(date).format('MMMM, D')
     },
     loadData () {
-      this.$store.dispatch('getNYTimes', this.currentPage - 1)
+      // Callback to call after success API in Vuex
+      const callback = () => {
+        this.dataLoading = false
+      }
+      // Start Loading
+      this.dataLoading = true
+      this.$store.dispatch('getNYTimes', {
+        page: this.currentPage - 1,
+        successCallback: callback
+      })
+    },
+    loadDataSet () {
+      setTimeout(this.loadData, 200)
     }
   },
   filters: {
@@ -103,7 +120,7 @@ export default {
     }
   },
   created () {
-    this.$store.dispatch('getNYTimes', this.currentPage - 1)
+    this.loadData()
   }
 }
 </script>
@@ -122,5 +139,17 @@ export default {
 
 .nav {
   margin-bottom: 40px;
+}
+
+.loading-overlay {
+  background: rgba(255, 255, 255, 0.8);
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
